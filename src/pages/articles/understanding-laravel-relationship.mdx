@@ -1,0 +1,224 @@
+import { ArticleLayout } from '@/components/ArticleLayout';
+
+export const meta = {
+    author: 'Irsyad A. Panjaitan',
+    date: '2023-02-24',
+    title: 'Understanding Laravel Relationships',
+    description:
+        'Laravel provides a simple and elegant way to define and interact with database relationships. These relationships allow you to easily query related data across multiple tables in your application.',
+};
+
+export default (props) => <ArticleLayout meta={meta} {...props} />;
+
+Laravel provides a simple and elegant way to define and interact with database relationships. These relationships allow you to easily query related data across multiple tables in your application.
+
+## Defining Relationships
+
+There are four types of relationships in Laravel:
+
+-   One to One
+-   One to Many
+-   Many to Many
+-   Has Many Through
+
+### One to One
+
+One to one relationships are defined using the `hasOne` and `belongsTo` methods. For example, let's say we have two tables: `users` and `phones`. A user has one phone, and a phone belongs to one user. We can define this relationship in our models like so:
+
+```php
+// User.php
+class User extends Model
+{
+    public function phone()
+    {
+        return $this->hasOne(Phone::class);
+    }
+}
+
+// Phone.php
+class Phone extends Model
+{
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+```
+
+### One to Many
+
+One to many relationships are defined using the `hasMany` and `belongsTo` methods. For example, let's say we have two tables: `users` and `posts`. A user has many posts, and a post belongs to one user. We can define this relationship in our models like so:
+
+```php
+// User.php
+class User extends Model
+{
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+}
+
+// Post.php
+class Post extends Model
+{
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+```
+
+### Many to Many
+
+Many to many relationships are defined using the `belongsToMany` method. For example, let's say we have two tables: `users` and `roles`. A user can have many roles, and a role can belong to many users. We can define this relationship in our models like so:
+
+```php
+// User.php
+class User extends Model
+{
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+}
+
+// Role.php
+class Role extends Model
+{
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+}
+```
+
+### Has Many Through
+
+Has many through relationships are defined using the `hasManyThrough` method. For example, let's say we have three tables: `countries`, `users`, and `posts`. A country has many users, a user has many posts, and we want to retrieve all posts for a given country. We can define this relationship in our models like so:
+
+```php
+// Country.php
+class Country extends Model
+{
+    public function posts()
+    {
+        return $this->hasManyThrough(Post::class, User::class);
+    }
+}
+
+// User.php
+class User extends Model
+{
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+}
+
+// Post.php
+class Post extends Model
+{
+    // ...
+}
+```
+
+## Querying Relationships
+
+Once relationships are defined, querying related data is easy. For example, let's say we want to retrieve all posts for a given user:
+
+```php
+$user = User::find(1);
+$posts = $user->posts;
+```
+
+Or, let's say we want to retrieve all users for a given role:
+
+```
+$role = Role::find(1);
+$users = $role->users;
+```
+
+## Polymorphic Relationships
+
+Besides the relationship types mentioned above, Laravel also provides polymorphic relationships. Polymorphic relationships allow a model to belong to more than one other model on a single association. This is useful when you have entities that can be associated with multiple other entities of different types.
+
+### One to Many Polymorphic Relationships
+
+One to many polymorphic relationships are defined using the `morphMany` and `morphTo` methods. For example, let's say we have two tables: `posts` and `comments`. Both posts and comments can have many comments, but comments can belong to either a post or another comment. We can define this relationship in our models like so:
+
+```php
+// Comment.php
+class Comment extends Model
+{
+    public function commentable()
+    {
+        return $this->morphTo();
+    }
+}
+
+// Post.php
+class Post extends Model
+{
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+}
+
+// Comment.php
+class Comment extends Model
+{
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function commentable()
+    {
+        return $this->morphTo();
+    }
+}
+```
+
+### Many to Many Polymorphic Relationships
+
+Many to many polymorphic relationships are defined using the `morphToMany` and `morphedByMany` methods. For example, let's say we have two tables: `tags` and `videos`. Both tags and videos can have many tags, and a tag can belong to either a video or another tag. We can define this relationship in our models like so:
+
+```php
+// Tag.php
+class Tag extends Model
+{
+    public function videos()
+    {
+        return $this->morphedByMany(Video::class, 'taggable');
+    }
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+}
+
+// Video.php
+class Video extends Model
+{
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+}
+```
+
+## Eager Loading Relationships
+
+Eager loading is the process of loading all of the related models at once, instead of making individual queries for each related model. This can significantly improve performance when working with related data.
+
+```php
+// Retrieve all users with their posts and comments
+$users = User::with('posts.comments')->get();
+```
+
+## Conclusion
+
+Laravel's relationship system is a powerful tool for working with related data in your application. With polymorphic relationships and eager loading, you can easily model complex relationships between multiple database tables, and retrieve related data with ease.

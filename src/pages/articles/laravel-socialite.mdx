@@ -1,0 +1,86 @@
+import { ArticleLayout } from '@/components/ArticleLayout';
+
+export const meta = {
+    author: 'Irsyad A. Panjaitan',
+    date: '2023-03-01',
+    title: 'Laravel Socialite',
+    description:
+        'Laravel Socialite is an optional package that provides a simple and convenient way to authenticate with OAuth providers.',
+};
+
+export default (props) => <ArticleLayout meta={meta} {...props} />;
+
+Laravel Socialite is an optional package that provides a simple and convenient way to authenticate with OAuth providers. It ships with support for authentication using Facebook, Twitter, LinkedIn, Google, GitHub, GitLab, and Bitbucket.
+
+To use Laravel Socialite, follow these steps:
+
+Install Laravel Socialite using Composer
+
+```bash
+composer require laravel/socialite
+```
+
+Set up the OAuth application with your provider of choice. This will typically involve registering your application with the provider and obtaining the necessary credentials (client ID, client secret, etc.).
+
+Configure the provider credentials in your `.env` file. Add the following lines to your `.env` file, replacing the placeholders with your actual credentials:
+
+```
+FACEBOOK_CLIENT_ID=your-facebook-client-id
+FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
+FACEBOOK_REDIRECT_URI=your-facebook-redirect-uri
+```
+
+In your Laravel application, create a route that will redirect the user to the OAuth provider's authentication page. For example:
+
+```php
+Route::get('/auth/facebook', function () {
+    return Socialite::driver('facebook')->redirect();
+});
+```
+
+Create a route to handle the callback after the user has authenticated with the OAuth provider. This route should call the `user()` method on the Socialite driver to retrieve the user's information. For example:
+
+```php
+Route::get('/auth/facebook/callback', function () {
+    $user = Socialite::driver('facebook')->user();
+
+    // Do whatever you need to do with the user's information
+});
+```
+
+That's it! You can repeat steps 4 and 5 for each OAuth provider you want to support.
+
+Keep in mind that Laravel Socialite only provides authentication, not authorization. Once you have authenticated the user, you will need to implement your own authorization logic to determine what the user is allowed to do within your application.
+
+To retrieve additional information about the user such as their email, you can add scopes to your authentication request. For example, to retrieve the user's email address from Facebook, modify your authentication request like this:
+
+```php
+return Socialite::driver('facebook')->scopes(['email'])->redirect();
+```
+
+Laravel Socialite also provides a convenient way to retrieve the user's avatar. You can use the `avatar()` method on the user object to retrieve the URL of the user's avatar. For example:
+
+```php
+$user = Socialite::driver('facebook')->user();
+$avatarUrl = $user->avatar();
+```
+
+If you need to perform additional actions after the user has been authenticated, you can register a callback function to be executed after the user is authenticated. For example:
+
+```php
+return Socialite::driver('facebook')
+    ->redirect()
+    ->with(['foo' => 'bar']);
+
+$user = Socialite::driver('facebook')->user();
+
+$foo = session('foo'); // 'bar'
+```
+
+Finally, if you need to use a different OAuth provider, you can easily add support for it in Laravel Socialite. Create a new driver class that extends the `Laravel\\Socialite\\AbstractProvider` class and implement the necessary methods. You can then use your new driver like any other driver in Laravel Socialite.
+
+That's how you can use Laravel Socialite in your Laravel application. It's an easy and convenient way to authenticate users with OAuth providers.
+
+Remember to always test your OAuth authentication flow thoroughly, including edge cases and error scenarios. Also, keep in mind that different OAuth providers may have different requirements and limitations, so make sure to read their documentation carefully.
+
+Finally, make sure to secure your OAuth credentials and never expose them publicly. Use secure storage solutions and environment variables to keep your credentials safe.

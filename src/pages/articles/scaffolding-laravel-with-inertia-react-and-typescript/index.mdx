@@ -1,0 +1,86 @@
+import { ArticleLayout } from '@/components/ArticleLayout';
+import Image from 'next/image';
+import screenshot from './screenshot-project.png';
+
+export const meta = {
+    author: 'Irsyad A. Panjaitan',
+    date: '2023-02-20',
+    title: 'Scaffolding Laravel Inertia And React With Typescript',
+    description:
+        "I've recently been working on a project that uses Laravel Inertia and React with Typescript. So I decided to write a repo that can be used as a scaffolding for future projects.",
+};
+
+export default (props) => <ArticleLayout meta={meta} {...props} />;
+
+I've recently been working on a project that uses Laravel Inertia and React with Typescript. So I decided to write a repo that can be used as a scaffolding for future projects.
+
+## The Project
+
+If you go to the [Laravel Inertia website](https://inertiajs.com/), you'll see that they have a support for React, Vue, and Svelte. But when you use laravel breeze as a scaffolding, it only supports React with `.jsx` and not `.tsx`.
+
+If you want to use Typescript, you'll need to do some extra work to make it work. Now with this repo, you can just clone it and start working on your project.
+
+Here's the preview of the project:
+
+<Image src={screenshot} alt='Screenshot project' />
+
+## The Repo
+
+You can find the repo here: [irsyadadl/inertia.ts](https://github.com/irsyadadl/inertia.ts/), there are some instructions on how to use it. I hope this can help you in your project.
+
+### tl;dr
+
+```bash
+git clone https://github.com/irsyadadl/inertia.ts.git 'project'
+cd project
+composer install
+cp .env.example .env
+php artisan key:generate
+npm i && npm run build
+```
+
+This project is still in development, so if you have any suggestions, feel free to open an issue or a PR.
+
+## The Features
+
+This project has came with some features that I think is useful for most projects, but you can always remove it if you don't need it.
+
+-   Authentication
+-   User Avatar
+-   User Profile Settings
+-   User Password Settings
+-   Delete Account
+-   Privacy Policy
+-   Terms of Service
+-   About Page
+
+## Components and Hooks
+
+I've also created some components and hooks like `useRoute`, `useTypedPage.ts` that can be used in your project. Maybe you'll think why I didn't use `usePage` from `@inertiajs/inertia-react`? Well, I think it's better to use `useTypedPage` because it has a type for the page props.
+So you don't need to define the type for the page props in every page.
+
+Also if you import the route from `ziggy-js`, it will crash on the ssr mode. So I've created `useRoute` that can be used to get the route name and params.
+
+To use it, you can just import it like this:
+
+```tsx
+import useRoute from '@/hooks/useRoute';
+
+export default function SomeComponent() {
+    const route = useRoute();
+
+    return <a href={route('profile.edit')}>Edit profile</a>;
+}
+```
+
+And the `useTypedPage` is just a wrapper for `usePage` that has a type for the page props.
+
+```tsx
+import useTypedPage from '@/hooks/useTypedPage';
+export default function SomeComponent() {
+    const { props } = useTypedPage<{ canViewThisPage: boolean }>();
+    const { canViewThisPage, user } = props;
+}
+```
+
+I hope this can help you in your project. If you have any suggestions, feel free to open an issue or a PR.

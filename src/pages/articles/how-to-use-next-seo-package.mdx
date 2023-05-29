@@ -1,0 +1,75 @@
+import { ArticleLayout } from '@/components/ArticleLayout';
+
+export const meta = {
+    author: 'Irsyad A. Panjaitan',
+    date: '2023-02-27',
+    title: 'How to Use Next SEO',
+    description:
+        'Next SEO is a package that provides a set of tools to help you optimize your Next.js application for search engines.',
+};
+
+export default (props) => <ArticleLayout meta={meta} {...props} />;
+
+Next SEO is a package that provides a set of tools to help you optimize your Next.js application for search engines. Here is a step-by-step guide on how to use Next SEO:
+
+## Installation
+
+First, you need to install the package using npm or yarn. To install it using npm, run the following command:
+
+```bash
+npm install next-seo
+```
+
+To install it using yarn, run the following command:
+
+```bash
+yarn add next-seo
+```
+
+## Usage
+
+After installing the package, you need to import it into your Next.js application. Here is an example of how to do it:
+
+```bash
+import { NextSeo } from 'next-seo';
+```
+
+Once you have imported the package, you can start using its components. The most important component is the `NextSeo` component, which you can use to set the SEO attributes of your pages.
+
+Here is an example of how to use the `NextSeo` component:
+
+```jsx
+import { NextSeo } from 'next-seo';
+
+function MyPage() {
+    return (
+        <>
+            <NextSeo
+                title='My Page Title'
+                description='My page description'
+                canonical='<https://example.com/my-page>'
+                openGraph={{
+                    url: '<https://example.com/my-page>',
+                    title: 'My Page Title',
+                    description: 'My page description',
+                    images: [
+                        {
+                            url: '<https://example.com/my-page-image.jpg>',
+                            alt: 'My page image',
+                        },
+                    ],
+                    site_name: 'My Site Name',
+                }}
+            />
+            <h1>My Page</h1>
+            <p>Welcome to my page</p>
+        </>
+    );
+}
+```
+
+In the example above, we are setting the `title`, `description`, `canonical` and `openGraph` attributes of our page. The `openGraph` attribute is used to set the Open Graph metadata of our page, which is used by social media platforms when sharing our page.
+
+## Conclusion
+
+Next SEO is a powerful package that can help you optimize your Next.js application for search engines. By using its components, you can easily set the SEO attributes of your pages and improve their visibility on search engines.

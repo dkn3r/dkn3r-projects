@@ -1,0 +1,96 @@
+import { ArticleLayout } from '@/components/ArticleLayout';
+
+export const meta = {
+    author: 'Irsyad A. Panjaitan',
+    date: '2023-02-25',
+    title: 'Dynamic Forms in React',
+    description:
+        'This article will guide you through the process of creating a dynamic form in React. You may want to use this approach if you want to create a form that has a dynamic number of fields.',
+};
+
+export default (props) => <ArticleLayout meta={meta} {...props} />;
+
+This article will guide you through the process of creating a dynamic form in React. You may want to use this approach if you want to create a form that has a dynamic number of fields. For example, you may want to create a form that allows user to create a variation for every product created.
+
+The very first thing we need to do is make a state that will hold the number of fields we want to create. We will call it `inputFields`.
+
+```jsx
+const [inputFields, setInputFields] = useState([
+    { attribute_1: '', attribte_2: '', price: '', sku: '' },
+]);
+```
+
+And then we will create a function that will handle the change of the input fields. We will call this function `handleInputChange`.
+
+```jsx
+const handleInputChange = (index, event) => {
+    let data = [...inputFields];
+    data[index][event.target.name] = event.target.value;
+    setInputFields(data);
+};
+```
+
+The `handleFormChange` function will take two parameters, the first one is the index of the input field and the second one is the event. The function will then create a new array of input fields and update the value of the input field that has been changed.
+
+After that , now we can iterate through the `inputFields` state and create a form for each field. We will also create a button that will allow user to add a new field.
+
+```jsx
+{
+    inputFields.map((inputField, index) => (
+        <div key={index}>
+            <input
+                type='text'
+                name='attribute_1'
+                value={inputField.attribute_1}
+                onChange={(event) => handleInputChange(index, event)}
+            />
+            <input
+                type='text'
+                name='attribute_2'
+                value={inputField.attribute_2}
+                onChange={(event) => handleInputChange(index, event)}
+            />
+            <input
+                type='text'
+                name='price'
+                value={inputField.price}
+                onChange={(event) => handleInputChange(index, event)}
+            />
+            <input
+                type='text'
+                name='sku'
+                value={inputField.sku}
+                onChange={(event) => handleInputChange(index, event)}
+            />
+        </div>
+    ));
+}
+```
+
+Next, we will create a function that will handle the addition of new input fields. We will call this function `handleAddFields`.
+
+```jsx
+const handleAddFields = () => {
+    let newfield = { attribute_1: '', attribte_2: '', price: '', sku: '' };
+    setInputFields([...inputFields, newfield]);
+};
+```
+
+But, we also need to create a function that will handle the removal of input fields. We will call this function `handleRemoveFields`.
+
+```jsx
+const handleRemoveFields = (index) => {
+    const values = [...inputFields];
+    values.splice(index, 1);
+    setInputFields(values);
+};
+```
+
+Now, we can add the `handleAddFields` and `handleRemoveFields` function to the button that we created earlier.
+
+```jsx
+<button onClick={() => handleAddFields()}>Add</button>
+<button onClick={() => handleRemoveFields(index)}>Remove</button>
+```
+
+And that's it. You have successfully created a dynamic form in React. Thanks for reading, I'm Irsyad and I'll see you in the next article.

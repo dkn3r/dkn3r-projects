@@ -1,0 +1,391 @@
+import { ArticleLayout } from '@/components/ArticleLayout';
+import Image from 'next/image';
+import screenshot from './setup-next-js.png';
+import welcomePage from './the-new-welcome-page-nextjs.png';
+import modifyWelcomePage from './modify-welcome-page.png';
+import cardScreenshot from './card-screenshot.png';
+import extractedComponent from './extracted-component.png';
+import performanceHistory from './performance-history.png';
+
+export const meta = {
+    author: 'Irsyad A. Panjaitan',
+    date: '2023-03-19',
+    title: 'Scaffolding Next JS with Tailwind CSS and Tremor',
+    description:
+        "In this article, I'll show you how to scaffold a Next JS project with Tailwind CSS and Tremor.",
+};
+
+export default (props) => <ArticleLayout meta={meta} {...props} />;
+
+First, we need to create a new Next JS project. We can do this by running the following command:
+```bash
+npx create-next-app nextjs-tailwind-tremor
+```
+And you can see the result of the command below:
+<Image src={screenshot} alt='Setup Next.js' />
+
+Next, we need to install Tailwind CSS and friends. We can do this by running the following command:
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+When the command is finished, we can continue to the next step by adding the following code to the `tailwind.config.js` file:
+```js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+    content: [
+        "./app/**/*.{js,ts,jsx,tsx}", // Note the addition of the `app` directory.
+        "./pages/**/*.{js,ts,jsx,tsx}",
+        "./components/**/*.{js,ts,jsx,tsx}",
+
+        // Or if using `src` directory:
+        "./src/**/*.{js,ts,jsx,tsx}",
+    ],
+    theme: {
+        extend: {},
+    },
+    plugins: [],
+};
+```
+And then we can add the following code to the `postcss.config.js` file:
+```js
+module.exports = {
+    plugins: {
+        tailwindcss: {},
+        autoprefixer: {},
+    },
+};
+```
+After that, we can add the following code to the `global.css` file:
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+And then we have to make sure that the `global.css` file is imported in the `app/layout.tsx` file:
+```js
+import { PropsWithChildren } from "react";
+import "./globals.css";
+
+export const metadata = {
+    title: "Next JS with Tailwind CSS and Tremor",
+    description: "Scaffolding Next JS with Tailwind CSS and Tremor.",
+};
+
+export default function RootLayout({ children }: PropsWithChildren) {
+    return (
+        <html lang="en">
+            <body>{children}</body>
+        </html>
+    );
+}
+```
+
+Now we can run the following command to start the development server:
+
+```bash
+npm run dev
+```
+
+And you can see the result of the command below:
+<Image src={welcomePage} alt='The new welcome page Next.js' />
+Now, let's try to edit the `app/page.tsx` file to see the changes:
+
+```jsx
+export default function Home() {
+    return (
+        <div className="bg-slate-900 py-24 sm:py-32">
+            <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                <div className="mx-auto max-w-2xl lg:mx-0">
+                    <p className="text-base font-semibold leading-7 text-indigo-400">
+                        Get the help you need
+                    </p>
+                    <h2 className="mt-2 text-4xl font-bold tracking-tight text-white sm:text-6xl">
+                        Support center
+                    </h2>
+                    <p className="mt-6 text-lg leading-8 text-slate-400">
+                        Anim aute id magna aliqua ad ad non deserunt sunt. Qui
+                        irure qui lorem cupidatat commodo. Elit sunt amet fugiat
+                        veniam occaecat fugiat aliqua.
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
+```
+And now if you refresh the page, you can see the changes:
+<Image src={modifyWelcomePage} alt='Modify Welcome Page' />
+
+With that, we have successfully created a Next JS project with Tailwind CSS. But we still need to add Tremor to our project.
+If you don't know what Tremor is, Tremor is the React library to build dashboards fast. You can read more about it in the [Tremor](https://www.tremor.so/).
+
+To add Tremor to our project, we can run the following command:
+```bash
+npm install @tremor/react
+```
+Now, before we continue any further, we need to tell tailwind to purge the `@tremor/react` library. We can do this by adding the following code to the `tailwind.config.js` file:
+
+```js
+content: [
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    './node_modules/@tremor/**/*.{js,ts,jsx,tsx}',
+
+    // Or if using src directory:
+    "./src/**/*.{js,ts,jsx,tsx}",
+],
+```
+
+After that, we need to tell next js if we want to use the `@tremor/react` library. We can do this by adding the following code to the `next.config.js` file:
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+    experimental: {
+        appDir: true,
+        serverComponentsExternalPackages: ['@tremor/react'],
+    },
+};
+
+module.exports = nextConfig;
+```
+Now, we can start to make new page for our project. I will assume that you already know how to create a new page in Next JS. If you don't know how to create a new page in Next JS, you can watch my course on [Next.js 13](https://parsinta.com/series/nextjs-13-dengan-laravel-fortify-jikon).
+First, let's create a file called `src/(dashboard)/layout.tsx` and add the following code to the file:
+
+```jsx
+import "../globals.css";
+import { PropsWithChildren } from "react";
+
+export const metadata = {
+    title: "Create Next App",
+    description: "Generated by create next app",
+};
+
+export default function RootLayout({ children }: PropsWithChildren) {
+    return (
+        <main className='bg-slate-100 min-h-screen p-24'>
+            {children}
+        </main>
+    );
+}
+```
+Next to create a dashboard inside `src/(dashboard)/dashboard/page.tsx` and add the following code to the file:
+```jsx
+'use client'
+
+import { BadgeDelta, Card, Flex, Metric, ProgressBar, Text, } from "@tremor/react";
+
+export default function Page() {
+    return (
+        <Card className="max-w-lg">
+            <Flex alignItems="start">
+                <div>
+                    <Text>Sales</Text>
+                    <Metric>$ 12,699</Metric>
+                </div>
+                <BadgeDelta deltaType="moderateIncrease">13.2%</BadgeDelta>
+            </Flex>
+            <Flex className="mt-4">
+                <Text className="truncate">68% ($ 149,940)</Text>
+                <Text> $ 220,500 </Text>
+            </Flex>
+            <ProgressBar percentageValue={15.9} className="mt-2" />
+        </Card>
+    );
+}
+```
+
+And now if you go to the `http://localhost:3000/dashboard` page, you can see the result:
+<Image src={cardScreenshot} alt='Card screenshot'/>
+
+Now, let's extract this into `KpiCard` component. First, let's make new folder called `src/components` and then make new file called `KpiCard.tsx` and add the following code to the file:
+```jsx
+import { BadgeDelta, Card, DeltaType, Flex, Metric, ProgressBar, Text } from "@tremor/react";
+export type Kpi = {
+    title: string;
+    metric: string;
+    progress: number;
+    target: string;
+    delta: string;
+    deltaType: DeltaType;
+};
+
+export default function KpiCard({ title, metric, progress, target, delta, deltaType }: Kpi) {
+    return (
+        <Card className="max-w-lg">
+            <Flex alignItems="start">
+                <div>
+                    <Text>{title}</Text>
+                    <Metric>{metric}</Metric>
+                </div>
+                <BadgeDelta deltaType={deltaType}>{delta}%</BadgeDelta>
+            </Flex>
+            <Flex className="mt-4">
+                <Text className="truncate">{target}</Text>
+                <Text>{delta}</Text>
+            </Flex>
+            <ProgressBar percentageValue={progress} className="mt-2" />
+        </Card>
+    );
+}
+```
+And then we can now replace the `dashboard.tsx` with the following code:
+```jsx
+"use client";
+
+import { BadgeDelta, Card, Grid, DeltaType, Flex, Metric, ProgressBar, Text } from "@tremor/react";
+import KpiCard, { Kpi } from "@/components/KpiCard";
+
+const kpiData: Kpi[] = [
+    {
+        title: "Sales",
+        metric: "$ 12,699",
+        progress: 15.9,
+        target: "$ 80,000",
+        delta: "13.2%",
+        deltaType: "moderateIncrease",
+    },
+    {
+        title: "Profit",
+        metric: "$ 45,564",
+        progress: 36.5,
+        target: "$ 125,000",
+        delta: "23.9%",
+        deltaType: "increase",
+    },
+    {
+        title: "Customers",
+        metric: "1,072",
+        progress: 53.6,
+        target: "2,000",
+        delta: "10.1%",
+        deltaType: "moderateDecrease",
+    },
+];
+
+export default function KpiCardGrid() {
+    return (
+        <Grid numColsSm={2} numColsLg={3} className="mt-6 gap-6">
+            {kpiData.map((item) => (
+                <KpiCard
+                    title={item.title}
+                    metric={item.metric}
+                    progress={item.progress}
+                    target={item.target}
+                    delta={item.delta}
+                    deltaType={item.deltaType}
+                />
+            ))}
+        </Grid>
+    );
+}
+```
+Now if you refresh the page, you will see the screenshot below:
+<Image src={extractedComponent} alt='Extracted KpiCard screenshot'/>
+
+Enough? I think that's not enough. Let's make a new page call chart inside `src/(dashboard)/chart/page.tsx` and add the following code to the file:
+```jsx
+'use client'
+
+import { useState } from "react";
+import {
+    AreaChart,
+    Card,
+    Flex,
+    Icon,
+    Text,
+    Title,
+    Toggle,
+    ToggleItem,
+} from "@tremor/react";
+import {InformationCircleIcon} from "@heroicons/react/20/solid";
+
+export const performance = [
+    {
+        date: "2021-01-01",
+        Sales: 900.73,
+        Profit: 173,
+        Customers: 73,
+    },
+    {
+        date: "2021-01-02",
+        Sales: 1000.74,
+        Profit: 174.6,
+        Customers: 74,
+    },
+    // ...
+    {
+        date: "2021-03-13",
+        Sales: 882,
+        Profit: 682,
+        Customers: 682,
+    },
+];
+
+// Basic formatters for the chart values
+const dollarFormatter = (value: number) =>
+    `$ ${Intl.NumberFormat("us").format(value).toString()}`;
+
+const numberFormatter = (value: number) =>
+    `${Intl.NumberFormat("us").format(value).toString()}`;
+
+export default function ChartView() {
+    const [selectedKpi, setSelectedKpi] = useState("Sales");
+
+    // map formatters by selectedKpi
+    const formatters: { [key: string]: any } = {
+        Sales: dollarFormatter,
+        Profit: dollarFormatter,
+        Customers: numberFormatter,
+    };
+
+    return (
+        <Card>
+            <div className="md:flex justify-between">
+                <div>
+                    <Flex
+                        justifyContent="start"
+                        className="space-x-0.5"
+                        alignItems="center"
+                    >
+                        <Title> Performance History </Title>
+                        <Icon
+                            icon={InformationCircleIcon}
+                            variant="simple"
+                            tooltip="Shows day-over-day (%) changes of past performance"
+                        />
+                    </Flex>
+                    <Text> Daily increase or decrease per domain </Text>
+                </div>
+                <div className="mt-6 md:mt-0">
+                    <Toggle
+                        color="zinc"
+                        defaultValue={selectedKpi}
+                        onValueChange={(value) => setSelectedKpi(value)}
+                    >
+                        <ToggleItem value="Sales" text="Sales" />
+                        <ToggleItem value="Profit" text="Profit" />
+                        <ToggleItem value="Customers" text="Customers" />
+                    </Toggle>
+                </div>
+            </div>
+            <AreaChart
+                data={performance}
+                index="date"
+                categories={[selectedKpi]}
+                colors={["blue"]}
+                showLegend={false}
+                valueFormatter={formatters[selectedKpi]}
+                yAxisWidth={56}
+                className="h-96 mt-8"
+            />
+        </Card>
+    );
+}
+```
+This page will show the chart of the performance history. And now if you go to the `http://localhost:3000/chart` page, you can see the result:
+<Image src={performanceHistory} alt='Performance History Screenshot'/>
+
+I think that's enough for now. You can explore the rest of the code by yourself.
+Thanks for reading this tutorial. I hope you enjoy it.

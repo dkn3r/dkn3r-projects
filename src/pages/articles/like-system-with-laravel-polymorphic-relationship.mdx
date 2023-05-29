@@ -1,0 +1,119 @@
+import { ArticleLayout } from '@/components/ArticleLayout';
+
+export const meta = {
+    author: 'Irsyad A. Panjaitan',
+    date: '2023-03-05',
+    title: 'Like System With Laravel Polymorphic Relationship',
+    description:
+        'In this tutorial, you will learn how to implement a like system with Laravel polymorphic relationship.',
+};
+
+export default (props) => <ArticleLayout meta={meta} {...props} />;
+
+In this tutorial, you will learn how to implement a like system with Laravel polymorphic relationship. The like system allows users to like a post or a comment. The like system is a common feature in social media applications. For example, you can like a post on Facebook or a comment on Twitter.
+
+To implement a Laravel polymorphic relationship with a like system, you can follow these steps.
+
+### Define the like model and migration
+
+Create a new migration using the make:model command, and define the schema of the likes table. You can use the following command to generate the migration:
+
+```bash
+php artisan make:model Like -m
+```
+
+Then, define the schema of the likes table in the migration file. For example, you can define the following fields:
+
+```php
+$table->id();
+$table->foreignId('user_id')->constrained();
+$table->morphs('likeable');
+$table->timestamps();
+```
+
+### Define the like model and relationships
+
+Define the Like model in app/Models/Like.php and add the following relationships:
+
+```php
+class Like extends Model
+{
+    public function likeable()
+    {
+        return $this->morphTo();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+```
+
+The likeable() method defines the polymorphic relationship between the like model and the likeable models, while the user() method defines the relationship between the like model and the user who created the like.
+
+### Define the likeable models and relationships
+
+Define the models that can be liked and add the following relationship to each of them:
+
+```php
+
+// App/Models/Post.php
+class Post extends Model
+{
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
+}
+
+// App/Models/Comment.php
+class Comment extends Model
+{
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
+}
+```
+
+The `likes()` method defines the polymorphic relationship between the likeable models and the like model.
+
+### Create a like
+
+To create a like, you can use the following code:
+
+```php
+$post = Post::find(1);
+$user = auth()->user();
+
+$post->likes()->create([
+    'user_id' => $user->id,
+]);
+```
+
+This code creates a new like for the post with ID 1, and assigns it to the authenticated user.
+
+### Retrieve likes
+
+To retrieve the likes for a specific likeable model, you can use the following code:
+
+```php
+$post = Post::find(1);
+$likes = $post->likes;
+```
+
+This code retrieves all the likes for the post with ID 1. To check if a user has liked a specific likeable model, you can use the following code:
+
+```php
+$post = Post::find(1);
+$user = auth()->user();
+
+$liked = $post->likes()->where('user_id', $user->id)->exists();
+```
+
+This code checks if the authenticated user has liked the post with ID 1. If the user has liked the post, the $liked variable will be true.
+
+These are the basic steps to implement a Laravel polymorphic relationship with a like system. You can customize the code based on your requirements.
+
+Now, you can use the like system in your Laravel application. If you have any questions, you can ask me over on Twitter.
